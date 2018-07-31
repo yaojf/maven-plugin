@@ -1,7 +1,9 @@
 package com.yaojiafeng.maven.plugin.plugin.bean;
 
 import com.yaojiafeng.maven.plugin.plugin.constant.Constants;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -18,6 +20,8 @@ import java.util.Objects;
  * Description:
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ApiModelInfo {
 
     private String type;// 类名,带范型信息

@@ -40,6 +40,8 @@ public class GenericTypeUtils {
         if (TypeUtils.isCustom(aClass, urlClassLoader)) {
             ApiModelInfo apiModelInfo = new ApiModelInfo();
             apiModelInfo.setType(name);
+            // 防止循环引用
+            apiModelInfoSet.add(apiModelInfo);
             Class<?> clazz = aClass;
             while (clazz != null) {
                 Field[] declaredFields = clazz.getDeclaredFields();
@@ -47,7 +49,7 @@ public class GenericTypeUtils {
                     for (Field field : declaredFields) {
                         if (!Modifier.isStatic(field.getModifiers())) {
                             String fieldName = apiModelInfo.visitField(field, typeParameterArray, aClass.getTypeParameters());
-                            if (!TypeUtils.isBaseType(field.getType())) {
+                            if (!TypeUtils.isBaseType(field.getType()) && !apiModelInfoSet.contains(new ApiModelInfo(fieldName, null))) {
                                 doResolve(fieldName, urlClassLoader, apiModelInfoSet);
                             }
                         }
@@ -55,7 +57,6 @@ public class GenericTypeUtils {
                 }
                 clazz = clazz.getSuperclass();
             }
-            apiModelInfoSet.add(apiModelInfo);
         } else if (TypeUtils.isCollection(aClass) && typeParameterArray.length > 0) {
             for (String typeParameter : typeParameterArray) {
                 doResolve(typeParameter, urlClassLoader, apiModelInfoSet);
